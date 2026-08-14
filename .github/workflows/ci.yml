@@ -38,19 +38,25 @@ jobs:
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
-      # 5) Lint — revisa estilo y reglas
+      # 5) GENERAR LOS TIPOS DE PRISMA
+      #    Sin esto, ESLint no "ve" los tipos de Prisma y marca todo como any.
+      #    No necesita base de datos: solo lee prisma/schema.prisma.
+      - name: Generar tipos de Prisma
+        run: pnpm exec prisma generate
+
+      # 6) Lint — revisa estilo y reglas
       - name: Lint
         run: pnpm run lint
 
-      # 6) Build — compila y detecta errores de tipos
+      # 7) Build — compila y detecta errores de tipos
       - name: Build
         run: pnpm run build
 
-      # 7) Tests — los 69 tests unitarios (no necesitan base de datos)
+      # 8) Tests — los 69 tests unitarios (no necesitan base de datos)
       - name: Tests
         run: pnpm run test
 
-      # 8) Opcional — auditoría de seguridad (avisa si una librería tiene
+      # 9) Opcional — auditoría de seguridad (avisa si una librería tiene
       #    vulnerabilidades; no bloquea el merge, solo informa)
       - name: Auditoría de seguridad
         run: pnpm audit --audit-level=high
