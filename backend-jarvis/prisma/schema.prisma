@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+}
+model Plan {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique @db.VarChar(50)
+  description String?  @db.Text
+  priceMonthly Decimal @default(0) @db.Decimal(10, 2) @map("price_monthly")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  users User[]
+  @@map("plans")
+}
+model User {
+  id          String   @id @default(uuid()) @db.Uuid
+  email       String   @unique @db.VarChar(255)
+  userName  String  @unique @map("user_name") @db.VarChar(50)
+  planId      Int      @default(1) @map("plan_id")
+  isActive    Boolean  @default(false) @map("is_active") //para bloquear cuentass
+  isVerified  Boolean  @default(false) @map("is_verified") //para verifcar cuentass
+  verificationToken String?   @unique @map("verification_token") @db.Text
+  verificationTokenExpiresAt DateTime? @map("verification_token_expires_at")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  plan            Plan              @relation(fields: [planId], references: [id])
+  authCredentials AuthCredential[]
+  sessions        UserSession[]
+  profile Profile?
+  @@map("users")
+}
+model AuthCredential {
+  id                String   @id @default(uuid()) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  provider          String   @db.VarChar(50)
+  providerAccountId String?   @map("provider_account_id") @db.VarChar(255)
+  passwordHash      String?  @map("password_hash") @db.VarChar(255)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, provider])
+  @@map("auth_credentials")
+}
+model UserSession {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  refreshTokenHash String   @map("refresh_token_hash") @db.Text
+  deviceInfo       String?  @map("device_info") @db.Text
+  ipAddress        String?  @map("ip_address") @db.Inet
+  isRevoked        Boolean  @default(false) @map("is_revoked")
+  revokedAt        DateTime? @map("revoked_at")
+  expiresAt        DateTime @map("expires_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid // @unique asegura que sea 1:1
+  firstName String?  @map("first_name") @db.VarChar(100)
+  lastName  String?  @map("last_name") @db.VarChar(100)
+  avatarUrl String?  @map("avatar_url") @db.Text
+  gender    String?  @db.Text
+  phone     String?  @db.Text 
+  birthDate DateTime? @map("birth_date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") //@updatedAt le dice a psotgres que actualice el campo cada vez que se modifique
+
+  // Campos específicos para la inteligencia de Chef Jarvis 🍳
+  defaultServings    Int       @default(1) @map("default_servings") // Base para tu lógica de escalado
+  dietaryPreferences String[]  @map("dietary_preferences")           // Array nativo de Postgres text[]
+  allergenWarnings   String[]  @map("allergen_warnings")             // Array nativo de Postgres text[]
+  
+  // Relación con User
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}

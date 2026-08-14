@@ -1,0 +1,119 @@
+architecture/
+
+Aquí iría todo lo relacionado con la arquitectura. 
+Aquí explicarías cómo funciona el sistema.
+
+Ejemplo:
+
+docs/architecture/
+
+system-overview.md
+
+authentication.md
+
+database.md
+
+microservices.md
+
+security.md
+
+redis.md
+
+----------------------*----------------------------------
+
+Aquí pondría los planning que te ha generado la IA.
+Cuando termines una etapa, la siguiente IA puede leer las anteriores.
+
+planning/
+
+stage-01-authentication.md
+
+stage-02-users.md
+
+stage-03-notifications.md
+
+stage-04-payments.md
+
+----------------------*----------------------------------
+
+Este documento no explica cómo funciona tu proyecto, sino qué tecnologías quieres aprender e incorporar.
+
+roadmap/
+
+backend-roadmap.md
+
+roadmap/
+
+learning-roadmap.md
+
+----------------------*----------------------------------
+docs/decisions/
+Esto lo usan muchas empresas.
+
+Se llaman ADR (Architecture Decision Records).
+
+ejemplo: ¿Por qué Redis?
+Porque necesitábamos cache y rate limiting.
+¿Por qué no Memcached?
+Porque Redis permite estructuras de datos más completas.
+
+ADR-001-use-postgresql.md
+
+ADR-002-use-jwt.md
+
+ADR-003-use-redis.md
+
+ADR-004-use-nestjs.md
+
+
+----------------------*----------------------------------
+learning/
+Aquí pondría cosas que vas aprendiendo.
+No es documentación del proyecto.
+Es documentación tuya.
+
+
+Jobs Batch.md
+
+Redis.md
+
+AWS.md
+
+CI-CD.md
+
+OAuth.md
+
+Kafka.md
+
+GraphQL.md
+
+----------------------*----------------------------------
+
+Mi recomendación
+
+En vez de crear solo un archivo, aprovecharía para dejar una base documental profesional desde el inicio. Tendrías, por ejemplo:
+
+README.md → explicación general del proyecto.
+docs/AI_CONTEXT.md → instrucciones para cualquier IA (OpenCode, Claude Code, ChatGPT, etc.).
+docs/PROJECT_GOALS.md → objetivos y filosofía del proyecto.
+docs/roadmap/learning-roadmap.md → tecnologías que quieres aprender, cuándo incorporarlas y por qué.
+docs/planning/ → todas las etapas del proyecto.
+docs/architecture/ → documentación técnica de la arquitectura.
+docs/decisions/ → decisiones importantes (ADRs).
+
+
+
+a fututro 
+agents/
+
+    backend-agent.md
+
+    frontend-agent.md
+
+    architect-agent.md
+
+    devops-agent.md
+
+    reviewer-agent.md
+
+    documentation-agent.md
