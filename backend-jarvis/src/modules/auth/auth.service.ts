@@ -67,7 +67,11 @@ export class AuthService {
         },
       });
     } catch (error) {
-      console.error('Error al guardar la sesión:', error);
+      //console.error('Error al guardar la sesión:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      );
       throw new InternalServerErrorException('No se pudo guardar la sesión.');
     }
   }
@@ -150,7 +154,11 @@ export class AuthService {
 
       return user;
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
+      //console.error('Error al registrar usuario:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      );
       // Manejo de errores específicos de Prisma
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -246,7 +254,10 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Error al iniciar sesión:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al iniciar sesión:', error);
       throw new InternalServerErrorException('No se pudo completar el login.');
     }
   }
@@ -304,7 +315,10 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Error al eliminar el token refresh:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al eliminar el token refresh:', error);
       throw new InternalServerErrorException(
         'No se pudo completar el cierre de sesión debido a un error interno.',
       );
@@ -324,7 +338,10 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
       });
     } catch (error) {
-      console.error('Error al verificar el token de refresco:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al verificar el token de refresco:', error);
       throw new UnauthorizedException('Token de refresco expirado o inválido.');
     }
 
@@ -393,21 +410,6 @@ export class AuthService {
       });
     }
 
-    // 5. Revocar sesión anterior y crear nueva (rotación en DB)
-    /*await this.prisma.$transaction([
-      this.prisma.userSession.update({
-        where: { id: targetSession.id },
-        data: { isRevoked: true, revokedAt: new Date() },
-      }),
-      this.prisma.userSession.create({
-        data: {
-          userId,
-          refreshTokenHash: await bcrypt.hash(newRefreshToken, 10),
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        },
-      }),
-    ]);*/
-
     // 6. Obtener datos del usuario (fuera de la transacción)
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -472,7 +474,10 @@ export class AuthService {
         console.log(`Intento de reenvío para email no registrado: ${email}`);
         return genericResponse; // respuesta genérica, no enumeramos usuarios
       }
-      console.error('Error al actualizar token de verificación:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al actualizar token de verificación:', error);
       throw error;
     }
 
@@ -483,7 +488,10 @@ export class AuthService {
         user.userName,
       );
     } catch (emailError) {
-      console.error('Error al enviar email de verificación:', emailError);
+      console.error(
+        'mensaje',
+        emailError instanceof Error ? emailError.message : String(emailError),
+      ); //console.error('Error al enviar email de verificación:', emailError);
     }
 
     return genericResponse;
@@ -520,7 +528,10 @@ export class AuthService {
       });
       return { message: 'Correo electrónico verificado exitosamente.' };
     } catch (error) {
-      console.error('Error al verificar el correo electrónico:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al verificar el correo electrónico:', error);
       throw new InternalServerErrorException(
         'No se pudo verificar el correo electrónico debido a un error interno.',
       );
@@ -550,7 +561,10 @@ export class AuthService {
       if (err instanceof HttpException) {
         throw err;
       }
-      console.log(err);
+      console.error(
+        'mensaje',
+        err instanceof Error ? err.message : String(err),
+      ); //console.log(err);
       throw new InternalServerErrorException('No se pudo completar el login.');
     }
   }
@@ -638,7 +652,10 @@ export class AuthService {
       if (error instanceof HttpException) {
         throw error;
       }
-      console.error('Error al iniciar sesión:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al iniciar sesión:', error);
       throw new InternalServerErrorException('No se pudo completar el login.');
     }
   }
@@ -696,7 +713,10 @@ export class AuthService {
 
       return user;
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
+      console.error(
+        'mensaje',
+        error instanceof Error ? error.message : String(error),
+      ); //console.error('Error al registrar usuario:', error);
       // Manejo de errores específicos de Prisma
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -769,7 +789,7 @@ export class AuthService {
       if (e instanceof HttpException) {
         throw e;
       }
-      console.error('Error al iniciar sesión:', e);
+      console.error('mensaje', e instanceof Error ? e.message : String(e)); //console.error('Error al iniciar sesión:', e);
       throw new InternalServerErrorException('No se pudo completar el login.');
     }
   }
