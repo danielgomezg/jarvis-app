@@ -46,10 +46,10 @@ Cada paso se marca con `[x]` cuando queda terminado.
 
 ### Paso 2 — Monorepo (un solo repo en la raíz)
 
-- [ ] Borrar el `.git` interno de `backend-jarvis/` (quedó obsoleto).
-- [ ] Inicializar git en la raíz del proyecto (`Proyecto-Jarvis-Evolve`),
+- [x] Borrar el `.git` interno de `backend-jarvis/` (quedó obsoleto).
+- [x] Inicializar git en la raíz del proyecto (`Proyecto-Jarvis-Evolve`),
   que abarca `backend-jarvis/` + `frontend-jarvis/`.
-- [ ] Consolidar las reglas de `.gitignore` de backend y frontend en el
+- [x] Consolidar las reglas de `.gitignore` de backend y frontend en el
   `.gitignore` de la raíz (`.env`, `node_modules`, `dist`, `.next`, etc).
 
 > **¿Por qué "monorepo"?** Es el estándar profesional para un proyecto
@@ -58,7 +58,7 @@ Cada paso se marca con `[x]` cuando queda terminado.
 
 ### Paso 3 — Primer commit
 
-- [ ] Hacer el primer commit con mensaje descriptivo, por ejemplo:
+- [x] Hacer el primer commit con mensaje descriptivo, por ejemplo:
   `chore: initial commit (backend + frontend)`.
 
 > **¿Qué es un commit?** Una "foto" del proyecto en un momento dado. Es el
@@ -68,24 +68,25 @@ Cada paso se marca con `[x]` cuando queda terminado.
 
 ### Paso 4 — Subir a GitHub
 
-- [ ] Crear el repo vacío en github.com (lo hace el usuario).
-- [ ] Conectar el repo local con el de GitHub (`git remote add origin <URL>`).
-- [ ] Hacer el push (subir el commit a GitHub).
+- [x] Crear el repo vacío en github.com (lo hace el usuario).
+- [x] Conectar el repo local con el de GitHub (`git remote add origin <URL>`).
+- [x] Hacer el push (subir el commit a GitHub).
 
 > **¿Qué es un remote?** La dirección del "disco en la nube" donde vive la
 > copia del proyecto. `push` = subir los commits locales a esa dirección.
 
 ### Paso 5 — Crear el CI con GitHub Actions
 
-- [ ] Crear `.github/workflows/ci.yml` con las etapas:
+- [x] Crear `.github/workflows/ci.yml` con las etapas:
   1. `checkout` → tomar el código del repo.
   2. setup de Node.js + pnpm.
   3. `pnpm install` → instalar las librerías.
-  4. `pnpm run lint` → revisar estilo y reglas.
-  5. `pnpm run build` → compilar (detecta errores de tipos).
-  6. `pnpm run test` → correr los tests unitarios.
-  7. (opcional) `pnpm audit` → revisar vulnerabilidades de librerías.
-- [ ] Configurar que se corra en cada `push` y cada `pull request`.
+  4. `prisma generate` → generar tipos de Prisma (necesario para lint/build).
+  5. `pnpm run lint` → revisar estilo y reglas.
+  6. `pnpm run build` → compilar (detecta errores de tipos).
+  7. `pnpm run test` → correr los tests unitarios.
+  8. (opcional) `pnpm audit` → revisar vulnerabilidades de librerías.
+- [x] Configurar que se corra en cada `push` y cada `pull request`.
 
 > **¿Qué es?** Un archivo de configuración (formato YAML) que describe la
 > "receta" del robot. Cada línea con `run:` es un comando de terminal — los
@@ -94,16 +95,16 @@ Cada paso se marca con `[x]` cuando queda terminado.
 
 ### Paso 6 — Proteger la rama `main`
 
-- [ ] En GitHub: Settings → Branches → *Require status checks*.
-- [ ] Configurar que `main` exija: un PR aprobado y el CI en verde.
+- [x] En GitHub: Settings → Branches → *Require status checks*.
+- [x] Configurar que `main` exija: un PR aprobado y el CI en verde.
 
 > **¿Por qué?** Es el "puesto de control": ningún cambio entra a la versión
 > oficial sin pasar por un PR y sin que el robot esté verde. Nada se rompe.
 
 ### Paso 7 — Verificación final
 
-- [ ] Hacer un push de prueba.
-- [ ] Confirmar en GitHub (pestaña Actions) que el workflow corre y queda
+- [x] Hacer un push de prueba.
+- [x] Confirmar en GitHub (pestaña Actions) que el workflow corre y queda
   verde.
 
 ---
