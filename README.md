@@ -1,6 +1,6 @@
 # Jarvis — AI Cooking Assistant
 
-Asistente culinario impulsado por IA que ayuda a crear recetas y planificaciones semanales de comida según los objetivos del usuario.
+Asistente culinario impulsado por IA que ayuda a crear recetas y planificaciones semanales de comida según los objetivos del usuario..
 
 > **Proyecto educativo**: El objetivo es aprender tecnologías profesionales utilizadas en empresas reales, no terminar rápido.
 
@@ -10,32 +10,32 @@ Asistente culinario impulsado por IA que ayuda a crear recetas y planificaciones
 
 ### Backend
 
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| NestJS | 11 | Framework backend |
-| TypeScript | 5.7 | Type safety |
-| Prisma | 7 | ORM |
-| PostgreSQL | - | Base de datos (Neon) |
-| Passport + JWT | - | Autenticación |
-| passport-google-oauth20 | - | OAuth con Google |
-| passport-github2 | - | OAuth con GitHub |
-| bcrypt | 6 | Hashing de passwords |
-| SendGrid | 8 | Envío de emails |
-| @nestjs/throttler | 6 | Rate limiting |
-| Swagger | 11 | Documentación de API |
+| Tecnología              | Versión | Propósito            |
+| ----------------------- | ------- | -------------------- |
+| NestJS                  | 11      | Framework backend    |
+| TypeScript              | 5.7     | Type safety          |
+| Prisma                  | 7       | ORM                  |
+| PostgreSQL              | -       | Base de datos (Neon) |
+| Passport + JWT          | -       | Autenticación        |
+| passport-google-oauth20 | -       | OAuth con Google     |
+| passport-github2        | -       | OAuth con GitHub     |
+| bcrypt                  | 6       | Hashing de passwords |
+| SendGrid                | 8       | Envío de emails      |
+| @nestjs/throttler       | 6       | Rate limiting        |
+| Swagger                 | 11      | Documentación de API |
 
 ### Frontend
 
-| Tecnología | Versión | Propósito |
-|------------|---------|-----------|
-| Next.js | 16 | Framework frontend (App Router) |
-| React | 19 | UI library |
-| Tailwind CSS | 4 | Estilos |
-| shadcn/ui | 4 | Componentes UI (Radix Nova) |
-| Zustand | 5 | State management |
-| React Hook Form | 7 | Formularios |
-| Zod | 4 | Validación de schemas |
-| Axios | 1.18 | HTTP client |
+| Tecnología      | Versión | Propósito                       |
+| --------------- | ------- | ------------------------------- |
+| Next.js         | 16      | Framework frontend (App Router) |
+| React           | 19      | UI library                      |
+| Tailwind CSS    | 4       | Estilos                         |
+| shadcn/ui       | 4       | Componentes UI (Radix Nova)     |
+| Zustand         | 5       | State management                |
+| React Hook Form | 7       | Formularios                     |
+| Zod             | 4       | Validación de schemas           |
+| Axios           | 1.18    | HTTP client                     |
 
 ---
 
@@ -97,6 +97,7 @@ Sistema dual de tokens:
 - **Refresh token**: Token opaco de 7 días (hasheado con bcrypt en DB)
 
 Features:
+
 - Registro con verificación de email (SendGrid)
 - Login social con Google y GitHub (OAuth 2.0)
 - Rotación de tokens en cada refresh
@@ -198,25 +199,25 @@ NEXT_PUBLIC_NESTJS_API_URL="http://localhost:3001/api/v1"
 
 ## Documentación
 
-| Archivo | Descripción |
-|---------|-------------|
-| `docs/AI_CONTEXT.md` | Instrucciones para IA |
-| `docs/PROJECT_GOALS.md` | Objetivos del proyecto |
-| `docs/PROJECT_ENGINEERING_GUIDE.md` | Flujo de trabajo |
-| `docs/architecture/authentication.md` | Cómo funciona la autenticación |
-| `docs/architecture/frontend.md` | Arquitectura del frontend |
-| `docs/decisions/ADR-001-use-nestjs.md` | Por qué NestJS |
-| `docs/decisions/ADR-002-use-jwt.md` | Por qué JWT |
-| `docs/decisions/ADR-003-use-postgresql.md` | Por qué PostgreSQL |
-| `docs/decisions/ADR-004-use-sendgrid.md` | Por qué SendGrid |
-| `docs/decisions/ADR-005-use-nextjs.md` | Por qué Next.js |
-| `docs/decisions/ADR-006-use-zustand.md` | Por qué Zustand |
-| `docs/decisions/ADR-007-use-shadcn.md` | Por qué shadcn/ui |
-| `docs/decisions/ADR-008-social-oauth.md` | Por qué OAuth social (Google + GitHub) |
+| Archivo                                                  | Descripción                                           |
+| -------------------------------------------------------- | ----------------------------------------------------- |
+| `docs/AI_CONTEXT.md`                                     | Instrucciones para IA                                 |
+| `docs/PROJECT_GOALS.md`                                  | Objetivos del proyecto                                |
+| `docs/PROJECT_ENGINEERING_GUIDE.md`                      | Flujo de trabajo                                      |
+| `docs/architecture/authentication.md`                    | Cómo funciona la autenticación                        |
+| `docs/architecture/frontend.md`                          | Arquitectura del frontend                             |
+| `docs/decisions/ADR-001-use-nestjs.md`                   | Por qué NestJS                                        |
+| `docs/decisions/ADR-002-use-jwt.md`                      | Por qué JWT                                           |
+| `docs/decisions/ADR-003-use-postgresql.md`               | Por qué PostgreSQL                                    |
+| `docs/decisions/ADR-004-use-sendgrid.md`                 | Por qué SendGrid                                      |
+| `docs/decisions/ADR-005-use-nextjs.md`                   | Por qué Next.js                                       |
+| `docs/decisions/ADR-006-use-zustand.md`                  | Por qué Zustand                                       |
+| `docs/decisions/ADR-007-use-shadcn.md`                   | Por qué shadcn/ui                                     |
+| `docs/decisions/ADR-008-social-oauth.md`                 | Por qué OAuth social (Google + GitHub)                |
 | `docs/decisions/ADR-009-cookie-auth-proxy-middleware.md` | Por qué proxy + cookies HttpOnly + middleware refresh |
-| `docs/planing/stage-01-auth.md` | Planning de la etapa de auth |
-| `docs/planing/stage-01b-google-oauth.md` | Planning del OAuth social |
-| `docs/roadmap/notes.md` | Tecnologías a aprender |
+| `docs/planing/stage-01-auth.md`                          | Planning de la etapa de auth                          |
+| `docs/planing/stage-01b-google-oauth.md`                 | Planning del OAuth social                             |
+| `docs/roadmap/notes.md`                                  | Tecnologías a aprender                                |
 
 ---
 
