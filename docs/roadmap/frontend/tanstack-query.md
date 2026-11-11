@@ -2,7 +2,7 @@
 
 ## Estado
 
-🔴 Pendiente
+✅ Implementado (perfil; extensible a recetas, despensa y planner)
 
 ---
 
@@ -14,7 +14,7 @@
 
 ## Nivel actual
 
-Nada
+Básico-intermedio (useQuery + useMutation + invalidación en el perfil)
 
 ---
 
@@ -135,4 +135,9 @@ No
 
 ## Estado en Jarvis
 
-❌ No implementado
+✅ Implementado. `QueryProvider` en `providers/QueryProvider.tsx`, hooks
+`useGetProfile` (useQuery) y `useUpdateProfile` (useMutation + invalidación).
+Ver [ADR-010](../../decisions/ADR-010-use-tanstack-query.md) y
+[Arquitectura del perfil](../../architecture/profile.md).
+
+Pendiente de practicar: optimistic updates y prefetching.
