@@ -10,4 +10,6 @@ export interface NavbarDropDownProfile {
   id: string;
   label: string;
   icon: React.ReactNode;
+  menuLink?: boolean;
+  href?: string;
 }

@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { NavbarDropDownProfile } from "@/types/navbar.types";
-import { LogOutIcon } from "lucide-react";
+import { Link, LogOutIcon } from "lucide-react";
 
 interface DropDownProps {
   menuContents: NavbarDropDownProfile[];
@@ -48,15 +48,21 @@ export default function DropDownProfile({
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           {menuContents.map((item) => (
-            <DropdownMenuItem key={item.id}>
-              {item.icon}
-              {item.label}
-            </DropdownMenuItem>
+            <a key={item.id} href={item.href}>
+              <DropdownMenuItem className="cursor-pointer">
+                {item.icon}
+                {item.label}
+              </DropdownMenuItem>
+            </a>
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <Button variant={"ghost"} className="px-0" onClick={logoutAction}>
+        <DropdownMenuItem variant="destructive">
+          <Button
+            variant={"ghost"}
+            className="px-0 cursor-pointer hover:bg-transparent"
+            onClick={logoutAction}
+          >
             <LogOutIcon />
             Cerrar Sesión
           </Button>
