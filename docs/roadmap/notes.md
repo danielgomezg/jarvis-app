@@ -30,7 +30,7 @@ Este archivo agrupa todas las tecnologías y herramientas que quiero aprender o 
 
 - ✅ Zustand
 - ✅ shadcn/ui
-- 🔴 TanStack Query
+- ✅ TanStack Query (perfil)
 - 🔴 Redux Toolkit
 - 🔴 Storybook
 - 🔴 Playwright
@@ -44,9 +44,9 @@ Este archivo agrupa todas las tecnologías y herramientas que quiero aprender o 
 
 ## Testing
 
-- ✅ Jest (backend — configurado, faltan tests reales)
-- 🔴 Vitest (frontend)
-- 🔴 React Testing Library (frontend)
+- ✅ Jest (backend — auth, profile y DTOs con Prisma mockeado)
+- ✅ Vitest (frontend — flujo de perfil, Fase 2)
+- ✅ React Testing Library (frontend — componentes, hooks y página)
 - 🔴 Playwright (frontend E2E)
 - 🔴 Cypress (frontend E2E, alternativa a Playwright)
 

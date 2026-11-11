@@ -1,5 +1,5 @@
 import { NavbarItemType, NavbarDropDownProfile } from "@/types/navbar.types";
-import { LogOutIcon, BadgeCheckIcon } from "lucide-react";
+import { LogOutIcon, BadgeCheckIcon, UserRound } from "lucide-react";
 
 export const navbarFields: NavbarItemType[] = [
   {
@@ -37,6 +37,14 @@ export const dropDownProfileMenu: NavbarDropDownProfile[] = [
     id: "account",
     label: "Cuenta",
     icon: <BadgeCheckIcon />,
+  },
+
+  {
+    id: "profile",
+    label: "Perfil",
+    icon: <UserRound />,
+    menuLink: true,
+    href: "/profile",
   },
 
   //Ejemplo el logout

@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,6 +39,16 @@ async function bootstrap() {
 
   // 3. Configuración del endpoint para la UI de Swagger
   SwaggerModule.setup('docs', app, document);
+
+  // 3. Configurar la Validación Global de DTOs
+  // Esto hace que la validación con class-validator funcione en todos los DTOs.
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Transforma automáticamente el cuerpo de la petición al tipo DTO
+      whitelist: true, // Remueve propiedades que no están definidas en el DTO (seguridad)
+      forbidNonWhitelisted: true, // lanza error si viene una propiedad no permitida
+    }),
+  );
 
   // Render cambia HTTPS a HTTP internamente; esto obliga a NestJS a confiar en Render para no bloquear las cookies seguras.
   // ¡IMPORTANTE! Para que esto funcione en producción, el servidor final DEBE tener configurado obligatoriamente un certificado HTTPS (SSL).

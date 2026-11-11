@@ -61,3 +61,64 @@ jobs:
       - name: Auditoría de seguridad
         run: pnpm audit --audit-level=high
         continue-on-error: true
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB DEL FRONTEND
+  # ─────────────────────────────────────────────────────────────────────────
+  # Corre en paralelo al job "quality" (GitHub ejecuta ambos jobs a la vez),
+  # así que validar el frontend no hace más lento el CI.
+  # Usa su propio lockfile porque frontend-jarvis/ es un paquete aparte.
+  frontend:
+    name: Frontend — Lint, build y tests
+    runs-on: ubuntu-latest # la máquina (gratis) que GitHub nos presta
+
+    # Todos los comandos corren dentro de frontend-jarvis/
+    defaults:
+      run:
+        working-directory: frontend-jarvis
+    steps:
+      # 1) Tomar el código del repo
+      - name: Tomar el codigo del repo
+        uses: actions/checkout@v4
+
+      # 2) Instalar pnpm (misma versión que usás en tu PC)
+      - name: Configurar pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.1
+
+      # 3) Instalar Node.js y activar caché con el lockfile del frontend
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: frontend-jarvis/pnpm-lock.yaml
+
+      # 4) Instalar las librerías (exactas, según el lockfile)
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      # 5) Lint — revisa estilo y reglas
+      - name: Lint
+        run: pnpm run lint
+
+      # 6) Build — compila Next.js y valida los tipos.
+      #    NEXT_PUBLIC_* se inyecta en build, así que definimos la URL del
+      #    backend para que el build sea determinista aunque no haya .env.
+      - name: Build
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_NESTJS_API_URL: http://localhost:4000/api
+
+      # 7) Tests — los tests de Vitest + React Testing Library.
+      #    Usamos "test:run" (una sola pasada); "test" es modo watch y se
+      #    quedaría colgado esperando cambios.
+      - name: Tests
+        run: pnpm test:run
+
+      # 8) Opcional — auditoría de seguridad (avisa si una librería tiene
+      #    vulnerabilidades; no bloquea el merge, solo informa)
+      - name: Auditoría de seguridad
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
