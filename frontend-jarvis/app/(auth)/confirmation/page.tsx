@@ -14,16 +14,24 @@ import {
 import { motion } from "motion/react";
 import { Separator } from "@/components/ui/separator";
 import ButtonCustom from "@/components/ButtonCustom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useConfirmation } from "@/hooks/auth/useConfirmation";
 import { useRouter, useSearchParams } from "next/navigation";
 
+export default function ConfirmationPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ConfirmationContent />
+    </Suspense>
+  );
+}
+
 const RESEND_SECONDS = 60;
 
-export default function ConfirmationPage() {
+function ConfirmationContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { confirmation, loading, error, success } = useConfirmation();
+  const searchParams = useSearchParams(); //para usar esto debe usar suspense para saber que mostrar antes de obtener los datos
+  const { confirmation, loading } = useConfirmation();
   const [countdown, setCountdown] = useState(RESEND_SECONDS);
   const [resendCount, setResendCount] = useState(0);
   const [justResent, setJustResent] = useState(false);
@@ -49,10 +57,6 @@ export default function ConfirmationPage() {
     try {
       const res = await confirmation({ email });
       setMessage(res.message || "Correo reenviado correctamente");
-      /*setCountdown(RESEND_SECONDS);
-      setResendCount((prevCount) => prevCount + 1);
-      setJustResent(true);
-      setTimeout(() => setJustResent(false), 3000);*/
     } catch (err) {
       console.error("Error al reenviar correo de verificación:", err);
       setMessage("Error al reenviar correo. Intenta nuevamente.");

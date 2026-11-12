@@ -48,8 +48,9 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
-      console.log(data);
-      await executeRegisterApi(data);
+      const { confirmPassword, ...registerData } = data; // Exclude confirmPassword from the data sent to the API
+      console.log(registerData);
+      await executeRegisterApi(registerData);
       console.log("SE REGISTRO");
       //TOAST  toast.success("¡Registro exitoso! Revisa tu correo para verificar tu cuenta.");
       //aun no probado
