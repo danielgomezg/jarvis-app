@@ -6,19 +6,18 @@ import axios from "axios";
 
 async function fetchUpdatedProfile(data: UpdateProfilePayload) {
   try {
-    console.log("ENviando perfil ", data);
-    console.log("fecha ", data.birthDate, "tipo ", typeof data.birthDate);
     const res = await ProfileService.updateProfile(data);
     return res.data;
   } catch (err) {
-    if (axios.isAxiosError(err) && err.response) {
-      // Mensaje específico que devuelve tu backend (ej: ConflictException)
-      throw new Error(
-        err.response.data?.message || "Error al actualizar el perfil.",
-      );
-    } else {
-      throw new Error("Error de conexión. Intenta nuevamente.");
-    }
+    const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+    // Mensaje específico que devuelve tu backend (ej: ConflictException)
+    const error = new Error(
+      axios.isAxiosError(err) && err.response
+        ? err.response.data?.message || "Error al actualizar el perfil."
+        : "Error de conexión. Intenta nuevamente.",
+    ) as Error & { status?: number };
+    error.status = status;
+    throw error;
   }
 }
 

@@ -19,23 +19,27 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     ProfileModule,
     PrismaModule,
     //rate limiting, para limitar las peticiones
-    ThrottlerModule.forRoot([
-      {
-        name: 'default',
-        ttl: 60000,
-        limit: 10, // 10 requests por minuto globalmente
-      },
-      {
-        name: 'short',
-        ttl: 60000, // 1 minuto
-        limit: 3,
-      },
-      {
-        name: 'long',
-        ttl: 3600000, // 1 hora
-        limit: 5,
-      },
-    ]),
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'default',
+          ttl: 60000,
+          limit: 60, // 60 requests por minuto globalmente
+        },
+        {
+          name: 'short',
+          ttl: 1000, // 1 segundo
+          limit: 5,
+        },
+        {
+          name: 'long',
+          ttl: 3600000, // 1 hora
+          limit: 1000,
+        },
+      ],
+      // En desarrollo no limitamos para evitar 429 mientras se prueba la UI.
+      skipIf: () => process.env.NODE_ENV !== 'production',
+    }),
   ],
   controllers: [AppController],
   providers: [

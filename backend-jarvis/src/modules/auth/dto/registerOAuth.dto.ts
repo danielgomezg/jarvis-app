@@ -4,6 +4,7 @@ import {
   IsString,
   MinLength,
   MaxLength,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -11,14 +12,14 @@ import { ApiProperty } from '@nestjs/swagger';
 //firstname y lastname no son obligatorios(pueden no estar en google), se pueden obtener de la red social, pero se pueden actualizar después en el perfil del usuario
 export class RegisterOAuthDto {
   @IsString({ message: 'El nombre debe ser un texto.' })
-  //@IsNotEmpty({ message: 'El nombre es obligatorio.' })
+  @IsOptional()
   @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
   @MaxLength(100, { message: 'El nombre no puede superar los 100 caracteres.' })
   @ApiProperty({ example: 'Juan' })
   firstName: string; // Para la tabla Profile
 
   @IsString({ message: 'El apellido debe ser un texto.' })
-  //@IsNotEmpty({ message: 'El apellido es obligatorio.' })
+  @IsOptional()
   @MinLength(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
   @MaxLength(100, {
     message: 'El apellido no puede superar los 100 caracteres.',

@@ -31,7 +31,7 @@ export class AuthController {
 
   @Post('register')
   @Public() // Esta ruta será pública, no requerirá JWT
-  @Throttle({ default: { ttl: 60000, limit: 3 } }) // 3 registros por minuto
+  @Throttle({ default: { ttl: 60000, limit: 3 } })
   @HttpCode(201)
   @ApiOperation({ summary: 'Registrar un nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente.' })
@@ -43,8 +43,8 @@ export class AuthController {
 
   @Get('verify-email')
   @Public()
-  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @ApiOperation({ summary: 'Verificar el correo electrónico del usuario' })
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
   @ApiQuery({
     name: 'token',
     required: true,
@@ -58,7 +58,7 @@ export class AuthController {
 
   @Post('login')
   @Public() // Esta ruta también es pública
-  @Throttle({ default: { ttl: 60000, limit: 100 } }) // 10 intentos por minuto cambiar a 5 por minuto si es necesario
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
   @HttpCode(200)
   @ApiOperation({ summary: 'Iniciar sesión y obtener un token JWT' })
   @ApiResponse({
@@ -76,10 +76,7 @@ export class AuthController {
 
   @Post('refresh')
   @Public() // El refresh token también se envía sin JWT
-  @Throttle({
-    short: { ttl: 60000, limit: 15 }, //cambio a 5
-    long: { ttl: 3600000, limit: 30 }, //  a 20
-  })
+  @Throttle({ default: { ttl: 60000, limit: 30 } })
   @HttpCode(200)
   @ApiOperation({ summary: 'Refrescar el token JWT usando el refresh token' })
   @ApiResponse({
@@ -122,6 +119,10 @@ export class AuthController {
   }
 
   @Post('resend-verification')
+  @Throttle({
+    default: { ttl: 60000, limit: 3 },
+    long: { ttl: 3600000, limit: 10 },
+  })
   @ApiOperation({ summary: 'Reenvia el mail de verificacion' })
   @ApiResponse({ status: 200, description: 'Email enviado con exito' })
   @ApiResponse({
@@ -131,10 +132,6 @@ export class AuthController {
   @ApiResponse({
     status: 429,
     description: 'Demasiadas solicitudes, intenta nuevamente más tarde',
-  })
-  @Throttle({
-    short: { ttl: 60000, limit: 3 },
-    long: { ttl: 3600000, limit: 5 },
   })
   @Public()
   async resendVerification(
@@ -148,13 +145,11 @@ export class AuthController {
   @Get('google')
   @Public()
   @UseGuards(GoogleAuthGuard)
-  @Throttle({ default: { ttl: 60000, limit: 100 } }) // 10 intentos por minuto cambiar a 5 por minuto si es necesario
   async googleLogin() {}
 
   @Get('google/callback')
   @Public()
   @UseGuards(GoogleAuthGuard)
-  @Throttle({ default: { ttl: 60000, limit: 100 } }) // 10 intentos por minuto cambiar a 5 por minuto si es necesario
   async googleCallback(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -169,13 +164,11 @@ export class AuthController {
   @Get('github')
   @Public()
   @UseGuards(GithubAuthGuard)
-  @Throttle({ default: { ttl: 60000, limit: 100 } }) // 10 intentos por minuto cambiar a 5 por minuto si es necesario
   async githubLogin() {}
 
   @Get('github/callback')
   @Public()
   @UseGuards(GithubAuthGuard)
-  @Throttle({ default: { ttl: 60000, limit: 100 } }) // 10 intentos por minuto cambiar a 5 por minuto si es necesario
   async githubCallback(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,

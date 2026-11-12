@@ -8,11 +8,19 @@ import { CardTitle } from "@/components/ui/card";
 import { CheckCircle2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import LoadingView from "@/components/status/LoadingViewCustom";
 import ErrorView from "@/components/status/ErrorViewCustom";
 import { useVerificated } from "@/hooks/auth/useVerificated";
 import { ButtonCustomType } from "@/types/button.types";
+
+export default function VerificatedPage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <VerificatedContent />
+    </Suspense>
+  );
+}
 
 const optionsList = [
   "Explorar recetas personalizadas con IA",
@@ -23,9 +31,7 @@ const optionsList = [
   "Mas opciones y sorpresas en el futuro",
 ];
 
-// AHORA PROBAR TODAS LAS VISTAS, Y LUEGO HACER EL HOME
-
-export default function VerificatedPage() {
+function VerificatedContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -34,7 +40,7 @@ export default function VerificatedPage() {
     token ? "loading" : "error",
   );
 
-  const { verification, loading, error, success } = useVerificated();
+  const { verification } = useVerificated();
 
   useEffect(() => {
     if (!token) return;

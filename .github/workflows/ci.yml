@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: ['**']
   pull_request:
     branches: [main]
 
 jobs:
   quality:
-    name: Lint, build y tests
+    name: Backend — Lint, build y tests
     runs-on: ubuntu-latest # la máquina (gratis) que GitHub nos presta
 
     # Como es un monorepo, todos los comandos corren dentro de backend-jarvis/
