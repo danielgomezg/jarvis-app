@@ -25,14 +25,15 @@ async function fetchProfile() {
 
     return profile;
   } catch (err) {
-    if (axios.isAxiosError(err) && err.response) {
-      // Mensaje específico que devuelve tu backend (ej: ConflictException)
-      throw new Error(
-        err.response.data?.message || "Error al obtener el perfil.",
-      );
-    } else {
-      throw new Error("Error de conexión. Intenta nuevamente.");
-    }
+    const status = axios.isAxiosError(err) ? err.response?.status : undefined;
+    // Mensaje específico que devuelve tu backend (ej: ConflictException)
+    const error = new Error(
+      axios.isAxiosError(err) && err.response
+        ? err.response.data?.message || "Error al obtener el perfil."
+        : "Error de conexión. Intenta nuevamente.",
+    ) as Error & { status?: number };
+    error.status = status;
+    throw error;
   }
 }
 
