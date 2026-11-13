@@ -2,13 +2,13 @@
 
 ## Estado
 
-Backend completado · Frontend completado · Tests de frontend completados (Fase 2)
+✅ Etapa cerrada — Backend, frontend y tests completados. Los pendientes menores quedaron en [`docs/roadmap/pendientes.md`](../roadmap/pendientes.md).
 
 ---
 
 ## Última actualización
 
-2026-11-04
+2026-11-13
 
 ---
 
@@ -112,10 +112,8 @@ preferencias dietéticas y advertencias de alérgenos).
 
 ### Pendiente / fuera de alcance de este stage
 
-- [ ] Subida de avatar (el botón existe, pero sin lógica)
-- [ ] Endpoints dedicados `me/dietary` y `me/allergens` (comentados en el controller)
-- [ ] Eliminar cuenta y cerrar sesión desde la zona de peligro (botones sin lógica)
-- [ ] Tests E2E del flujo completo (Playwright)
+Los pendientes de este stage se movieron al backlog del proyecto para no duplicar información:
+[`docs/roadmap/pendientes.md`](../roadmap/pendientes.md) → sección **Etapa 02 — Perfil**.
 
 ---
 
