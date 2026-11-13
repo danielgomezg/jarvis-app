@@ -47,6 +47,7 @@ Este archivo agrupa todas las tecnologías y herramientas que quiero aprender o 
 - ✅ Jest (backend — auth, profile y DTOs con Prisma mockeado)
 - ✅ Vitest (frontend — flujo de perfil, Fase 2)
 - ✅ React Testing Library (frontend — componentes, hooks y página)
+- 🟡 Spec-driven testing con agentes (en aprendizaje — ver [ai/spec-driven-testing.md](ai/spec-driven-testing.md))
 - 🔴 Playwright (frontend E2E)
 - 🔴 Cypress (frontend E2E, alternativa a Playwright)
 
@@ -118,5 +119,6 @@ Agentes
 ├── workflows multi-step
 ├── testing con agentes
 ├── code review con agentes
+├── orquestación de agentes
 └── supervisión y validación humana
 ```
