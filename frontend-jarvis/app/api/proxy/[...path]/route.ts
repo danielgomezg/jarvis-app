@@ -9,6 +9,7 @@ async function proxy(
   { params }: { params: Promise<{ path: string[] }> }, // ← Promise
 ) {
   const { path } = await params; // ← await obligatorio
+  //obtener lo que viene despues del proxy, ejemplo: /api/proxy/profile/123 → path = ['profile', '123']
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access-token")?.value;
   const pathString = path.join("/"); // convierte el array de strings en una ruta de string ejemplo ['profile', '123'] → 'profile/123'

@@ -1,5 +1,5 @@
 import { Button } from "./ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "cn"
 
 interface ButtonCustomProps {
   text?: string;
@@ -8,25 +8,25 @@ interface ButtonCustomProps {
   classNameCustom?: string;
   disabled?: boolean;
   variant?:
-    | "outline"
-    | "link"
-    | "default"
-    | "secondary"
-    | "ghost"
-    | "destructive"
-    | null
-    | undefined;
+  | "outline"
+  | "link"
+  | "default"
+  | "secondary"
+  | "ghost"
+  | "destructive"
+  | null
+  | undefined;
   size?:
-    | "default"
-    | "xs"
-    | "sm"
-    | "lg"
-    | "icon"
-    | "icon-xs"
-    | "icon-sm"
-    | "icon-lg"
-    | null
-    | undefined;
+  | "default"
+  | "xs"
+  | "sm"
+  | "lg"
+  | "icon"
+  | "icon-xs"
+  | "icon-sm"
+  | "icon-lg"
+  | null
+  | undefined;
   type?: "button" | "submit" | "reset" | undefined;
 }
 

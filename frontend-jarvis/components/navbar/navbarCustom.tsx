@@ -8,6 +8,7 @@ import {
 } from "../ui/navigation-menu";
 import { usePathname } from "next/navigation";
 import { NavbarItemType } from "@/types/navbar.types";
+import Link from "next/link";
 
 interface NavbarCustomProps {
   children?: React.ReactNode;
@@ -31,8 +32,9 @@ export default function NavigationMenuListCustom({
           ///>
           <NavigationMenuLink
             className={`${navigationMenuTriggerStyle()} cursor-pointer transition-all ${pathname === menuItems.href ? "bg-[#fff7ed] font-[600] text-[#f97316]" : "bg-transparent font-[400] text-[#6b7280]"} hover:bg-[#fff7ed] hover:text-[#f97316] `}
+            asChild
           >
-            {menuItems.menuTrigger}
+            <Link href={menuItems.href}>{menuItems.menuTrigger}</Link>
           </NavigationMenuLink>
         ) : (
           <>
