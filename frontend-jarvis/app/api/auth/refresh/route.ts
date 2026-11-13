@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST() {
-  // console.log("Refresh route: request received");
+  //console.log("Refresh route: request received");
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
