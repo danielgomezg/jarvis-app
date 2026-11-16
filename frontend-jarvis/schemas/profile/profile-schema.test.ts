@@ -135,14 +135,14 @@ describe('profileSchema', () => {
       expect(firstMessage(result)).toBe('La racion mimina es 1')
     })
 
-    it('rechaza más de 1000', () => {
+    it('rechaza más de 100', () => {
       const result = profileSchema.safeParse({
         ...validProfile,
-        defaultServings: 1001,
+        defaultServings: 101,
       })
 
       expect(result.success).toBe(false)
-      expect(firstMessage(result)).toBe('La racion maxima es 1000')
+      expect(firstMessage(result)).toBe('La racion maxima es 100')
     })
   })
 

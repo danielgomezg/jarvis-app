@@ -151,6 +151,14 @@ describe('UpdateProfileDto', () => {
       );
     });
 
+    it('debe fallar si defaultServings es mayor a 100 (máximo 100)', async () => {
+      const errors = await validate(
+        buildDto({ userName: 'juanperez', defaultServings: 101 }),
+      );
+
+      expect(messagesOf(errors)).toContain('La racion maxima es 100');
+    });
+
     it('debe fallar si defaultServings no es un entero', async () => {
       const errors = await validate(
         buildDto({ userName: 'juanperez', defaultServings: 2.5 }),

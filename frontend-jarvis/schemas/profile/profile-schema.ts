@@ -35,7 +35,7 @@ export const profileSchema = z.object({
   defaultServings: z
     .number()
     .min(1, "La racion mimina es 1")
-    .max(1000, "La racion maxima es 1000"),
+    .max(100, "La racion maxima es 100"),
   dietaryPreferences: z
     .array(
       z
