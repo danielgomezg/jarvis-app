@@ -5,6 +5,7 @@ import {
   IsInt,
   IsPhoneNumber,
   Min,
+  Max,
   IsDateString,
   IsOptional,
   IsArray,
@@ -71,6 +72,7 @@ export class UpdateProfileDto {
   @ApiProperty({ example: 2 })
   @IsOptional()
   @Min(1, { message: 'Las porciones por defecto debe ser al menos 1.' })
+  @Max(100, { message: 'La racion maxima es 100' })
   defaultServings?: number;
 
   @MinLength(2, {
