@@ -56,7 +56,11 @@ jobs:
       - name: Tests
         run: pnpm run test
 
-      # 9) Opcional — auditoría de seguridad (avisa si una librería tiene
+       # 9) Tests de aceptación escritos desde la spec
+      - name: Tests de aceptación (spec)
+        run: pnpm run test:spec
+
+      # 10) Opcional — auditoría de seguridad (avisa si una librería tiene
       #    vulnerabilidades; no bloquea el merge, solo informa)
       - name: Auditoría de seguridad
         run: pnpm audit --audit-level=high
@@ -117,7 +121,7 @@ jobs:
       - name: Tests
         run: pnpm test:run
 
-      # 8) Opcional — auditoría de seguridad (avisa si una librería tiene
+      # 9) Opcional — auditoría de seguridad (avisa si una librería tiene
       #    vulnerabilidades; no bloquea el merge, solo informa)
       - name: Auditoría de seguridad
         run: pnpm audit --audit-level=high
