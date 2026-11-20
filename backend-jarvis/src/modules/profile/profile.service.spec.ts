@@ -43,6 +43,7 @@ const profileSelect = {
   defaultServings: true,
   dietaryPreferences: true,
   allergenWarnings: true,
+  user: { select: { userName: true } },
 };
 
 const profileFromDb = {
@@ -57,6 +58,11 @@ const profileFromDb = {
   dietaryPreferences: [],
   allergenWarnings: [],
 };
+
+// Lo que devuelve la consulta (perfil + relación user) y lo que responde el
+// servicio (plano, con userName al mismo nivel que los demás campos).
+const profileWithUser = { ...profileFromDb, user: { userName: 'juanperez' } };
+const profileResponse = { ...profileFromDb, userName: 'juanperez' };
 
 describe('ProfileService', () => {
   let service: ProfileService;
@@ -99,7 +105,7 @@ describe('ProfileService', () => {
   // ───────────────────────────────────────────────────────────────────────
   describe('getProfile', () => {
     it('debe devolver el perfil cuando existe', async () => {
-      prisma.profile.findUnique.mockResolvedValue(profileFromDb);
+      prisma.profile.findUnique.mockResolvedValue(profileWithUser);
 
       const result = await service.getProfile('user-1');
 
@@ -107,7 +113,7 @@ describe('ProfileService', () => {
         where: { userId: 'user-1' },
         select: profileSelect,
       });
-      expect(result).toEqual(profileFromDb);
+      expect(result).toEqual(profileResponse);
     });
 
     it('debe lanzar NotFoundException si el userId está vacío', async () => {
@@ -170,13 +176,28 @@ describe('ProfileService', () => {
       expect(prisma.$transaction).not.toHaveBeenCalled();
     });
 
+    it('debe lanzar BadRequestException si el dto solo tiene propiedades undefined', async () => {
+      // Es lo que produce el ValidationPipe con `{}`: el DTO queda con las
+      // claves creadas por los @Transform, pero sin ningún valor.
+      const dto = {
+        userName: undefined,
+        firstName: undefined,
+        defaultServings: undefined,
+      } as UpdateProfileDto;
+
+      await expect(service.updateProfile('user-1', dto)).rejects.toThrow(
+        new BadRequestException('Datos de actualización no proporcionados'),
+      );
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
+
     it('debe actualizar User y Profile dentro de una transacción', async () => {
       const dto: UpdateProfileDto = {
         userName: 'nuevouser',
         firstName: 'Juan',
         birthDate: '1990-01-01',
       };
-      prisma.profile.update.mockResolvedValue(profileFromDb);
+      prisma.profile.findUnique.mockResolvedValue(profileWithUser);
 
       const result = await service.updateProfile('user-1', dto);
 
@@ -185,39 +206,43 @@ describe('ProfileService', () => {
         where: { id: 'user-1' },
         data: { userName: 'nuevouser' },
       });
-      expect(prisma.profile.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { userId: 'user-1' },
+      expect(prisma.profile.update).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        data: {
+          firstName: 'Juan',
           // birthDate "1990-01-01" se convierte a Date a medianoche UTC
-          data: {
-            firstName: 'Juan',
-            birthDate: new Date('1990-01-01T00:00:00.000Z'),
-          },
-        }),
-      );
-      expect(result).toEqual(profileFromDb);
+          birthDate: new Date('1990-01-01T00:00:00.000Z'),
+        },
+      });
+      expect(result).toEqual(profileResponse);
     });
 
-    it('debe convertir birthDate ausente en null al actualizar el perfil', async () => {
-      // Comportamiento actual: aunque no envíes birthDate, el servicio
-      // escribe null en ese campo del perfil.
+    it('debe conservar birthDate si no se envía (actualización parcial)', async () => {
       const dto: UpdateProfileDto = {
         userName: 'nuevouser',
         defaultServings: 2,
       };
-      prisma.profile.update.mockResolvedValue(profileFromDb);
+      prisma.profile.findUnique.mockResolvedValue(profileWithUser);
 
       await service.updateProfile('user-1', dto);
 
-      expect(prisma.profile.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: { defaultServings: 2, birthDate: null },
-        }),
+      expect(prisma.profile.update).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+        data: { defaultServings: 2 },
+      });
+    });
+
+    it('debe lanzar BadRequestException si birthDate es futura', async () => {
+      const dto: UpdateProfileDto = { birthDate: '2999-01-01' };
+
+      await expect(service.updateProfile('user-1', dto)).rejects.toThrow(
+        new BadRequestException('La fecha de nacimiento no puede ser futura.'),
       );
+      expect(prisma.$transaction).not.toHaveBeenCalled();
     });
 
     it('debe devolver el perfil sin tocar Profile cuando solo cambia userName', async () => {
-      prisma.profile.findUnique.mockResolvedValue(profileFromDb);
+      prisma.profile.findUnique.mockResolvedValue(profileWithUser);
 
       const result = await service.updateProfile('user-1', {
         userName: 'solousername',
@@ -231,7 +256,7 @@ describe('ProfileService', () => {
       expect(prisma.profile.findUnique).toHaveBeenCalledWith(
         expect.objectContaining({ where: { userId: 'user-1' } }),
       );
-      expect(result).toEqual(profileFromDb);
+      expect(result).toEqual(profileResponse);
     });
 
     it('debe lanzar ConflictException si Prisma devuelve P2002 (userName duplicado)', async () => {
@@ -247,6 +272,19 @@ describe('ProfileService', () => {
       ).rejects.toThrow(
         new ConflictException('El nombre de usuario ya está en uso.'),
       );
+    });
+
+    it('debe lanzar NotFoundException si Prisma devuelve P2025 (perfil inexistente)', async () => {
+      prisma.profile.update.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('not found', {
+          code: 'P2025',
+          clientVersion: 'test',
+        }),
+      );
+
+      await expect(
+        service.updateProfile('user-1', { firstName: 'Juan' }),
+      ).rejects.toThrow(new NotFoundException('Perfil no encontrado'));
     });
 
     it('debe relanzar la HttpException original en vez de envolverla en 500', async () => {
