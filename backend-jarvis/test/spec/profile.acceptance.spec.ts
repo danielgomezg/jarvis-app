@@ -48,6 +48,8 @@ const recordNotFoundError = () =>
 // ---------------------------------------------------------------------------
 
 process.env.JWT_SECRET = process.env.JWT_SECRET ?? 'spec-test-secret';
+process.env.SENDGRID_API_KEY =
+  process.env.SENDGRID_API_KEY ?? 'spec-test-sendgrid-key';
 
 const USER_A = { id: 'user-a-id', email: 'a@test.com', userName: 'usuario_a' };
 const USER_B = { id: 'user-b-id', email: 'b@test.com', userName: 'usuario_b' };
@@ -313,10 +315,10 @@ describe('Spec — Perfil (stage-02)', () => {
       jwt.sign(
         expOffset < 0
           ? {
-              sub: userId,
-              email,
-              exp: Math.floor(Date.now() / 1000) + expOffset,
-            }
+            sub: userId,
+            email,
+            exp: Math.floor(Date.now() / 1000) + expOffset,
+          }
           : { sub: userId, email },
         { secret: process.env.JWT_SECRET },
       );
