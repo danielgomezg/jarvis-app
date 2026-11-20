@@ -20,11 +20,11 @@ La práctica profesional equivalente tiene varios nombres: **black-box testing**
 
 ## Estado
 
-🟡 En aprendizaje — Fase 1 (manual)
+🟢 Fase 1 completada (piloto del perfil, 2026-11-17) — siguiente: Fase 2 (medir)
 
 ## Última actualización
 
-2026-11-13
+2026-11-17
 
 ## Prioridad
 
@@ -150,10 +150,24 @@ Regla práctica: **n8n son las manos, LangGraph es el cerebro**. Los frameworks 
 
 ## Criterios de éxito del piloto
 
-- [ ] Encontrar al menos **un bug real** o **una ambigüedad real** en la spec.
-- [ ] El tiempo invertido es razonable frente al valor obtenido.
-- [ ] El proceso se puede repetir en otra etapa sin empezar de cero.
-- [ ] La spec queda versionada y actualizada.
+- [x] Encontrar al menos **un bug real** o **una ambigüedad real** en la spec.
+      Resultado: 10 bugs reales y 4 reglas de la spec que estaban ambiguas.
+- [x] El tiempo invertido es razonable frente al valor obtenido.
+      Resultado: 1 sesión de tester, 1 de triaje y 1 de corrección.
+- [x] El proceso se puede repetir en otra etapa sin empezar de cero.
+      Resultado: el flujo quedó documentado en este archivo y en la plantilla
+      de reporte.
+- [x] La spec queda versionada y actualizada.
+      Resultado: [`docs/specs/stage-02-profile.md`](../../specs/stage-02-profile.md).
+
+### Resultado del piloto
+
+- Informe: [`docs/reports/stage-02-profile-spec-tests.md`](../../reports/stage-02-profile-spec-tests.md)
+- Tester: GLM-5.3-Flash Free (familia distinta a la del código).
+- 57 tests de aceptación escritos solo desde la spec, **57 en verde** al cerrar.
+- 10 bugs encontrados; 2 de ellos (B4 y B8) estaban ocultos por el principal (B1).
+- 24 tests del tester pasaban por el motivo equivocado: el triaje humano los detectó.
+- 1 bug reportado por el tester fue **descartado** (era un defecto del mock).
 
 ---
 
