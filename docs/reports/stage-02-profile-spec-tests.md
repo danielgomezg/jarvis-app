@@ -7,7 +7,7 @@
 - **Rama / commit**: `test/spec-profile`
 - **Modelo / proveedor**: GLM-5.3-Flash Free (opencode) — agente tester independiente
 - **Sesión**: Piloto de spec-driven testing, backend-jarvis
-- **Entorno**: Jest + Supertest · Prisma mockeado (almacenamiento en memoria con `jest.fn()`)
+- **Entorno**: Jest + Supertest · Prisma mockeado (almacenamiento en memoria con `jest.fn()`) · variables de entorno falsas en `test/spec/setup-env.ts`
 
 ## Resumen
 
@@ -260,3 +260,55 @@ no habrían aparecido sin corregir primero la validación.
 - La spec creció: cuatro reglas que antes eran ambiguas hoy están escritas.
 - Sin la spec, B4 y B8 seguían invisibles: los tests unitarios estaban escritos
   desde la implementación y compartían sus supuestos.
+
+## 7. Hallazgo de entorno: la suite no era autocontenida
+
+Apareció **después** de agregar `pnpm run test:spec` al workflow. El primer run
+de CI falló con **57/57 en 2,3 s**:
+
+```
+TypeError: OAuth2Strategy requires a clientID option
+```
+
+El log mostraba antes el warning `SENDGRID_API_KEY is required`, pero ese era
+solo el primero de la cadena. La causa real:
+
+| Servicio | Validación | Efecto |
+|---|---|---|
+| `GoogleStrategy` | passport exige `clientID` en el constructor | `AppModule` no arranca sin `GOOGLE_CLIENT_ID` |
+| `GithubStrategy` | ídem | ídem con `GITHUB_CLIENT_ID` |
+| `MailService` | `throw new Error('SENDGRID_API_KEY is required')` en el constructor | ídem |
+| `PrismaService` | `throw new Error('DATABASE_URL is not set')` | en la suite se reemplaza por un mock |
+
+La suite levanta la app completa (`Test.createTestingModule({ imports: [AppModule] })`),
+así que esas validaciones de arranque la alcanzan aunque los tests nunca envíen
+un correo ni hablen con Google/GitHub. En local lo tapaba `backend-jarvis/.env`;
+en Actions no existe ese archivo.
+
+**Diagnóstico**: se reprodujo en local ejecutando Jest **desde una carpeta sin
+`.env`** (no alcanza con `pnpm --dir`, porque cambia el cwd y sigue encontrando
+el archivo). Resultado: 57 fallos y el mismo `TypeError`.
+
+**Corrección** (solo tests, sin tocar producción):
+
+- Nuevo `backend-jarvis/test/spec/setup-env.ts` con valores falsos para
+  `JWT_SECRET`, `JWT_REFRESH_SECRET`, `DATABASE_URL`, `FRONTEND_URL`,
+  `SENDGRID_*`, `GOOGLE_*` y `GITHUB_*`.
+- Declarado en `test/jest-spec.json` como `setupFiles`, que corre **antes** de
+  importar `AppModule`.
+- Se eliminaron dos stubs inline que vivían en el spec (corrían después de los
+  imports y no protegían a las estrategias).
+- La key falsa empieza con `SG.` para silenciar el warning de SendGrid.
+
+Detalle de diseño: `@nestjs/config` **no pisa** claves que ya estén en
+`process.env` (`filter(key => !(key in process.env))`), y `setupFiles` corre
+antes de `ConfigModule`. Por eso los stubs ganan sobre el `.env` y la corrida
+local queda determinista. El `??` se usa para respetar variables exportadas en
+el shell o inyectadas por CI.
+
+**Verificación**: 57/57 desde una carpeta sin `.env` (paridad con CI), 57/57 y
+110/110 en local, lint con 0 errores.
+
+**Pendientes derivados** (anotados en `docs/roadmap/pendientes.md`): validar
+`SENDGRID_API_KEY` al usar `MailService` en vez de al construirlo, y que las
+configs OAuth lean `ConfigService` en vez de `process.env` directo.
