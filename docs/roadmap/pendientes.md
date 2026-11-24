@@ -19,7 +19,7 @@ Al cerrar una etapa se pueden detectar mejoras que no forman parte de su alcance
 
 ## Última actualización
 
-2026-11-13
+2026-11-20
 
 ---
 
@@ -68,6 +68,26 @@ Etapa cerrada el 2026-11-13. Origen: [`stage-02-profile.md`](../planing/stage-02
 - [ ] Agregar el flujo E2E con Playwright.
 - Qué falta: registro → login → ver perfil → editar → guardar.
 - Por qué: los tests actuales son unitarios y no cubren el recorrido real en un navegador.
+
+---
+
+## Etapa 02 — Hallazgos del piloto de tests por spec
+
+Origen: [`docs/reports/stage-02-profile-spec-tests.md`](../reports/stage-02-profile-spec-tests.md).
+
+### `MailService` valida la API key en el constructor
+
+- [ ] Validar `SENDGRID_API_KEY` al **usar** el servicio, no al construirlo.
+- Dónde: `backend-jarvis/src/modules/mail/mail.service.ts` (líneas 7-13).
+- Qué falta: mover el chequeo a un método privado que se llame en `sendVerificationEmail` / `sendPasswordResetEmail`, o degradar con un error claro solo cuando se intente enviar.
+- Por qué: hoy toda la aplicación es inarrancable sin la variable, incluso para endpoints que no envían correos. Eso obligó a los tests de aceptación a inventar una key falsa (`test/spec/setup-env.ts`).
+
+### Configuración OAuth lee `process.env` directo
+
+- [ ] Usar `ConfigService` en `google-oauth.config.ts` y `github-oauth.config.ts`.
+- Dónde: `backend-jarvis/src/modules/auth/config/`.
+- Qué falta: registrar las factories con acceso a `ConfigService` (o validar con `validationSchema` en `ConfigModule.forRoot`).
+- Por qué: al leer `process.env` en el constructor de la estrategia, un entorno sin credenciales falla con `OAuth2Strategy requires a clientID option`, un mensaje que no dice qué variable falta.
 
 ---
 

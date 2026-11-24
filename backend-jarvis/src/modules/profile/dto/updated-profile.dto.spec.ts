@@ -58,27 +58,33 @@ describe('UpdateProfileDto', () => {
       expect(errors).toHaveLength(0);
     });
 
-    it('debe fallar si falta userName', async () => {
+    it('debe aceptar un dto sin userName (actualización parcial)', async () => {
       const errors = await validate(buildDto({ firstName: 'Juan' }));
 
+      expect(errors).toHaveLength(0);
+    });
+
+    it('debe fallar si userName tiene 2 caracteres (mínimo 3)', async () => {
+      const errors = await validate(buildDto({ userName: 'ab' }));
+
       expect(messagesOf(errors)).toContain(
-        'El nombre de usuario es obligatorio.',
+        'El nombre de usuario debe tener al menos 3 caracteres.',
       );
     });
 
-    it('debe fallar si userName tiene 1 carácter', async () => {
-      const errors = await validate(buildDto({ userName: 'j' }));
+    it('debe fallar si userName supera los 30 caracteres', async () => {
+      const errors = await validate(buildDto({ userName: 'a'.repeat(31) }));
 
       expect(messagesOf(errors)).toContain(
-        'El nombre de usuario debe tener al menos 2 caracteres.',
+        'El nombre de usuario no puede superar los 30 caracteres.',
       );
     });
 
-    it('debe fallar si userName supera los 50 caracteres', async () => {
-      const errors = await validate(buildDto({ userName: 'a'.repeat(51) }));
+    it('debe fallar si userName tiene caracteres no permitidos', async () => {
+      const errors = await validate(buildDto({ userName: 'juan perez' }));
 
       expect(messagesOf(errors)).toContain(
-        'El nombre de usuario no puede superar los 50 caracteres.',
+        'El nombre de usuario solo admite letras sin acentos, números, punto, guion y guion bajo.',
       );
     });
   });
@@ -131,13 +137,31 @@ describe('UpdateProfileDto', () => {
       expect(errors).toHaveLength(0);
     });
 
-    it('debe fallar si firstName tiene 1 carácter', async () => {
+    it('debe aceptar firstName de 1 carácter (la spec permite 1 a 50)', async () => {
       const errors = await validate(
         buildDto({ userName: 'juanperez', firstName: 'J' }),
       );
 
+      expect(errors).toHaveLength(0);
+    });
+
+    it('debe fallar si firstName supera los 50 caracteres', async () => {
+      const errors = await validate(
+        buildDto({ userName: 'juanperez', firstName: 'x'.repeat(51) }),
+      );
+
       expect(messagesOf(errors)).toContain(
-        'El nombre debe tener al menos 2 caracteres.',
+        'El nombre no puede superar los 50 caracteres.',
+      );
+    });
+
+    it('debe fallar si el gender no es uno de los valores permitidos', async () => {
+      const errors = await validate(
+        buildDto({ userName: 'juanperez', gender: 'Otro' }),
+      );
+
+      expect(messagesOf(errors)).toContain(
+        'El género debe ser uno de los valores permitidos.',
       );
     });
 

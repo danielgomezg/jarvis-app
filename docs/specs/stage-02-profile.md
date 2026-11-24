@@ -39,7 +39,7 @@ Definir el comportamiento esperado de la API de perfil para que pueda probarse *
 
 | Campo | Tipo | Regla |
 |---|---|---|
-| `userName` | string | 3 a 30 caracteres; letras, números, punto, guion y guion bajo; único |
+| `userName` | string | 3 a 30 caracteres; solo `A-Z`, `a-z`, `0-9`, `.`, `_` y `-` (sin acentos ni `ñ`); sin espacios internos; único |
 | `firstName` | string | 1 a 50 caracteres |
 | `lastName` | string | 1 a 50 caracteres |
 | `phone` | string | 7 a 20 caracteres; dígitos, `+`, `-` y espacios |
@@ -64,13 +64,15 @@ Devuelve el perfil del usuario autenticado.
 | Token válido y perfil existente | `200` | Objeto con los campos del perfil |
 | Sin token, token inválido o expirado | `401` | Error de autenticación |
 | Token válido pero el usuario no tiene perfil | `404` | Error indicando que el perfil no existe |
-| Se excede el límite de peticiones | `429` | Error de límite |
+
+> El límite de peticiones (`429`) queda **fuera del alcance del piloto**: solo se activa en producción y el `GET` tiene un límite muy alto, así que no es un comportamiento que un cliente deba esperar en este contexto.
 
 ### Reglas
 
 - Solo devuelve el perfil del usuario del token. Nunca el de otro usuario.
 - No devuelve datos sensibles.
 - El perfil devuelto incluye `userName` y los campos de la tabla anterior.
+- `birthDate` se devuelve en formato ISO 8601 (por ejemplo `1990-05-10T00:00:00.000Z`). Los clientes pueden quedarse con la parte `YYYY-MM-DD`.
 
 ---
 
@@ -104,6 +106,23 @@ Actualiza el perfil del usuario autenticado.
 6. **`userName` único**: si otro usuario ya lo tiene, responde `409` y no modifica nada.
 7. **Independencia entre usuarios**: el token de un usuario nunca modifica el perfil de otro.
 
+### Orden de la normalización y la validación
+
+Para que no haya dudas, el orden es siempre el mismo:
+
+```
+1. Recortar espacios al inicio y al final de los textos (incluido userName).
+2. Pasar los arrays a minúsculas.
+3. Validar: largo, formato, charset, lista de valores, duplicados y rango.
+4. Validar que birthDate no sea futura.
+```
+
+Consecuencias:
+
+- `'  nuevo_nombre  '` es **válido**: se guarda como `'nuevo_nombre'`.
+- `'tiene espacio'` es **inválido**: después del recorte sigue teniendo un espacio interno.
+- `['Vegano', 'vegano']` es **inválido**: los duplicados se evalúan después de pasar a minúsculas.
+
 ---
 
 ## Decisiones aprobadas
@@ -122,6 +141,15 @@ Aprobadas por el dueño del proyecto el **2026-11-16**.
 | 8 | Espacios en `userName` | No permitidos |
 
 > Nota sobre `gender`: se usan etiquetas en español como valores de la API. Si el proyecto se internacionaliza, conviene migrar a códigos estables y traducir en el frontend.
+
+### Resoluciones del 2026-11-17 (después del piloto)
+
+| # | Tema | Decisión |
+|---|---|---|
+| 9 | Caracteres de `userName` | Solo ASCII: `A-Z`, `a-z`, `0-9`, `.`, `_` y `-`. Sin acentos ni `ñ` |
+| 10 | Orden de normalización | Recortar espacios → pasar arrays a minúsculas → validar (los duplicados se evalúan ya en minúsculas) |
+| 11 | Formato de salida de `birthDate` | ISO 8601; el cliente puede usar la parte `YYYY-MM-DD` |
+| 12 | Límite de peticiones (`429`) | Fuera del alcance del piloto: solo se activa en producción |
 
 ---
 
