@@ -46,8 +46,8 @@ const recordNotFoundError = () =>
 // ---------------------------------------------------------------------------
 // Entorno de prueba
 // ---------------------------------------------------------------------------
-
-process.env.JWT_SECRET = process.env.JWT_SECRET ?? 'spec-test-secret';
+// Las variables de entorno (JWT, OAuth, SendGrid, DATABASE_URL) las define
+// `test/spec/setup-env.ts`, que Jest carga ANTES de importar este archivo.
 
 const USER_A = { id: 'user-a-id', email: 'a@test.com', userName: 'usuario_a' };
 const USER_B = { id: 'user-b-id', email: 'b@test.com', userName: 'usuario_b' };
