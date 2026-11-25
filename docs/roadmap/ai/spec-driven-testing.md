@@ -146,7 +146,10 @@ automatizar.
 
 Completada el 2026-11-25. Todo en `.github/workflows/ci.yml`, job `quality`:
 
-- La suite corre con `--json --outputFile=spec-results.json`.
+- La suite corre con el script `test:spec:ci`, que agrega
+  `--json --outputFile=spec-results.json`. Se usa un script propio y no
+  argumentos después de `--`, porque en el runner pnpm no quitaba el separador y
+  Jest lo tomaba como patrón de archivos ("No tests found").
 - Un paso con `actions/github-script` publica o actualiza **un comentario en el PR**
   con el total y los tests que fallaron. Si el PR viene de un fork, el comentario
   falla por permisos y el CI sigue.

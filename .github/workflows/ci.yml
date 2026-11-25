@@ -64,6 +64,9 @@ jobs:
 
       # 9) Tests de aceptación escritos desde la spec
       #
+      #    - Se usa un script propio (`test:spec:ci`) en vez de agregar los
+      #      argumentos con `--`: pnpm en el runner no quitaba el separador y
+      #      Jest lo interpretaba como un patrón de archivos ("No tests found").
       #    - `--json --outputFile=spec-results.json` guarda el resultado en un
       #      archivo legible por máquina; el paso siguiente lo convierte en un
       #      comentario del PR.
@@ -71,7 +74,7 @@ jobs:
       #      que se publique el resumen y que el último paso marque el rojo.
       - name: Tests de aceptación (spec)
         id: spec
-        run: pnpm run test:spec -- --json --outputFile=spec-results.json
+        run: pnpm run test:spec:ci
         continue-on-error: true
 
       # 10) Resumen de la suite en el PR
