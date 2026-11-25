@@ -11,6 +11,12 @@ jobs:
     name: Backend — Lint, build y tests
     runs-on: ubuntu-latest # la máquina (gratis) que GitHub nos presta
 
+    # Permiso para que el paso del resumen pueda escribir un comentario en el PR.
+    # Sin esto, el token del workflow es de solo lectura y el comentario falla.
+    permissions:
+      contents: read
+      pull-requests: write
+
     # Como es un monorepo, todos los comandos corren dentro de backend-jarvis/
     defaults:
       run:
@@ -56,11 +62,107 @@ jobs:
       - name: Tests
         run: pnpm run test
 
-       # 9) Tests de aceptación escritos desde la spec
+      # 9) Tests de aceptación escritos desde la spec
+      #
+      #    - `--json --outputFile=spec-results.json` guarda el resultado en un
+      #      archivo legible por máquina; el paso siguiente lo convierte en un
+      #      comentario del PR.
+      #    - `continue-on-error: true` evita que el workflow se corte acá: deja
+      #      que se publique el resumen y que el último paso marque el rojo.
       - name: Tests de aceptación (spec)
-        run: pnpm run test:spec
+        id: spec
+        run: pnpm run test:spec -- --json --outputFile=spec-results.json
+        continue-on-error: true
 
-      # 10) Opcional — auditoría de seguridad (avisa si una librería tiene
+      # 10) Resumen de la suite en el PR
+      #
+      #    Lee el JSON del paso anterior y publica (o actualiza) un comentario
+      #    con el total y los tests que fallaron. Así no hay que abrir el log.
+      #    - `if: always()`: se ejecuta aunque la suite haya fallado.
+      #    - Solo en pull_request: en un push a rama no hay PR donde comentar.
+      #    - `continue-on-error`: si el PR viene de un fork, el token no tiene
+      #      permiso de escritura y el comentario falla; no debe romper el CI.
+      #    - `actions/github-script` corre desde la raíz del repo, por eso la
+      #      ruta del archivo lleva el prefijo `backend-jarvis/`.
+      - name: Resumen de la suite en el PR
+        if: always() && github.event_name == 'pull_request'
+        continue-on-error: true
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            const file = 'backend-jarvis/spec-results.json'
+            // Si Jest ni siquiera arrancó (error de configuración o de imports),
+            // no hay archivo: se avisa y no se comenta nada.
+            if (!fs.existsSync(file)) {
+              core.info('No se generó spec-results.json; no se publica resumen.')
+              return
+            }
+
+            const results = JSON.parse(fs.readFileSync(file, 'utf8'))
+            const total = results.numTotalTests ?? 0
+            const passed = results.numPassedTests ?? 0
+            const failed = results.numFailedTests ?? 0
+
+            const failedTitles = (results.testResults ?? []).flatMap((suite) =>
+              (suite.assertionResults ?? [])
+                .filter((test) => test.status === 'failed')
+                .map((test) => test.title)
+            )
+
+            const icon = failed === 0 ? '✅' : '❌'
+            let body = `### ${icon} Suite de aceptación (spec)\n\n`
+            body += `**${passed}/${total} pasaron** · ${failed} fallaron\n`
+
+            if (failedTitles.length > 0) {
+              body += '\nFallaron:\n'
+              body += failedTitles.map((title) => `- \`${title}\``).join('\n')
+              body += '\n\nEl detalle completo está en el log del paso "Tests de aceptación (spec)".'
+            }
+
+            // Evita llenar el PR de comentarios: si ya hay uno de esta suite,
+            // se actualiza en vez de crear otro.
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const front = '### '
+            const previous = comments.find(
+              (comment) =>
+                typeof comment.body === 'string' &&
+                comment.body.startsWith(front) &&
+                comment.body.includes('Suite de aceptación (spec)')
+            )
+
+            if (previous) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: previous.id,
+                body,
+              })
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              })
+            }
+
+      # 11) Cierre en rojo
+      #
+      #    El paso 9 no corta el workflow, así que acá se recupera el resultado
+      #    real. Si la suite falló, el job termina con error y el check queda en
+      #    rojo: con la protección de rama configurada, el merge se bloquea.
+      - name: Fallar si la suite de aceptación está en rojo
+        if: steps.spec.outcome == 'failure'
+        run: |
+          echo "La suite de aceptación falló. Ver el resumen publicado en el PR."
+          exit 1
+
+      # 12) Opcional — auditoría de seguridad (avisa si una librería tiene
       #    vulnerabilidades; no bloquea el merge, solo informa)
       - name: Auditoría de seguridad
         run: pnpm audit --audit-level=high
