@@ -225,7 +225,7 @@ por librería) en vez de la regla de la spec (7–20 caracteres, `+`, `-`, espac
 
 ## 6. Resultado final del piloto
 
-Código corregido y tests re-ejecutados el **2026-11-17**:
+Código corregido y tests re-ejecutados el **2026-11-20**:
 
 | Suite | Resultado |
 |---|---|
@@ -296,8 +296,9 @@ el archivo). Resultado: 57 fallos y el mismo `TypeError`.
   `SENDGRID_*`, `GOOGLE_*` y `GITHUB_*`.
 - Declarado en `test/jest-spec.json` como `setupFiles`, que corre **antes** de
   importar `AppModule`.
-- Se eliminaron dos stubs inline que vivían en el spec (corrían después de los
-  imports y no protegían a las estrategias).
+- Se eliminaron dos stubs inline que vivían en el spec: cubrían solo
+  `JWT_SECRET` y `SENDGRID_API_KEY` y dejaban afuera las credenciales OAuth,
+  que eran la causa real de la falla.
 - La key falsa empieza con `SG.` para silenciar el warning de SendGrid.
 
 Detalle de diseño: `@nestjs/config` **no pisa** claves que ya estén en
@@ -312,3 +313,60 @@ el shell o inyectadas por CI.
 **Pendientes derivados** (anotados en `docs/roadmap/pendientes.md`): validar
 `SENDGRID_API_KEY` al usar `MailService` en vez de al construirlo, y que las
 configs OAuth lean `ConfigService` en vez de `process.env` directo.
+
+## 8. Métricas del piloto
+
+Datos obtenidos de los commits y del triaje. Lo que no se midió queda marcado
+como tal: no se estima para no ensuciar la comparación con la etapa 03.
+
+### Medido
+
+| Métrica | Valor |
+|---|---|
+| Tests de aceptación escritos | 57 |
+| Bugs reales encontrados | 10 |
+| Bugs por test | 0,18 |
+| Bugs que los 110 unitarios no detectaban | 10 (validaban el comportamiento anterior, no la spec) |
+| Bugs ocultos por otro bug | 2 (B4 y B8, tapados por B1) |
+| Ambigüedades de la spec resueltas | 4 |
+| Falsos verdes detectados en el triaje | 24 / 57 = **42 %** |
+| Reportes del tester descartados | 1 de 5 clasificados (F04) |
+
+### No medido
+
+| Métrica | Motivo |
+|---|---|
+| Tiempo por fase | No se registraron horas de inicio y fin |
+| Costo por bug | Depende del tiempo |
+| Tokens o costo del modelo | No se instrumentó |
+
+### Cronología real (según commits)
+
+| Fecha | Sesión |
+|---|---|
+| 2026-11-16 | Spec aprobada (merge del PR #8), tester escribe la suite y triaje |
+| 2026-11-20 | Corrección de código, ajuste de la suite y documentación |
+| 2026-11-24 | Arreglo de entorno para CI y limpieza de historial |
+
+Cuatro sesiones repartidas en tres días, con ocho días de calendario entre la
+aprobación de la spec y el cierre. El tiempo es el dato más débil del piloto y
+la razón por la que la etapa 03 se va a medir con la plantilla.
+
+## 9. Decisión sobre la etapa 03
+
+Se repite el proceso si se cumplen **las tres condiciones**:
+
+1. Aparecen **3 o más bugs reales**, contando solo los confirmados en el triaje.
+2. Los falsos verdes del tester quedan **por debajo del 25 %** de los tests
+   escritos.
+3. El trabajo efectivo no supera **2 sesiones** hasta dejar la suite en verde.
+
+Se descarta o se replantea si aparece cualquiera de estas:
+
+- 2 bugs reales o menos con más de 2 sesiones invertidas.
+- Más del 50 % de los fallos reportados resultan falsos verdes tras el triaje.
+- La suite no se puede dejar autocontenida (variables, datos o dependencias de
+  entorno) en una sesión.
+
+Los valores de la etapa 03 se registran con la sección **Métricas** de
+[`docs/templates/spec-test-report-template.md`](../templates/spec-test-report-template.md).

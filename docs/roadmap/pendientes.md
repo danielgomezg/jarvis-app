@@ -89,6 +89,12 @@ Origen: [`docs/reports/stage-02-profile-spec-tests.md`](../reports/stage-02-prof
 - Qué falta: registrar las factories con acceso a `ConfigService` (o validar con `validationSchema` en `ConfigModule.forRoot`).
 - Por qué: al leer `process.env` en el constructor de la estrategia, un entorno sin credenciales falla con `OAuth2Strategy requires a clientID option`, un mensaje que no dice qué variable falta.
 
+### Marcar el check del CI como requerido
+
+- [ ] En GitHub: Settings → Branches → regla de `main` → *Require status checks to pass* → agregar `Backend — Lint, build y tests` y `Frontend — Lint, build y tests`.
+- Qué falta: es configuración del repositorio, no código.
+- Por qué: el workflow ya devuelve rojo cuando la suite de aceptación falla, pero el merge solo se bloquea si el check está marcado como requerido.
+
 ---
 
 ## Referencias
