@@ -47,7 +47,7 @@ Este archivo agrupa todas las tecnologías y herramientas que quiero aprender o 
 - ✅ Jest (backend — auth, profile y DTOs con Prisma mockeado)
 - ✅ Vitest (frontend — flujo de perfil, Fase 2)
 - ✅ React Testing Library (frontend — componentes, hooks y página)
-- 🟢 Spec-driven testing con agentes (piloto del perfil cerrado — Fase 2 pendiente, ver [ai/spec-driven-testing.md](ai/spec-driven-testing.md))
+- 🟢 Spec-driven testing con agentes (Fases 1–3 cerradas — repetir en la etapa 03, ver [ai/spec-driven-testing.md](ai/spec-driven-testing.md))
 - 🔴 Playwright (frontend E2E)
 - 🔴 Cypress (frontend E2E, alternativa a Playwright)
 

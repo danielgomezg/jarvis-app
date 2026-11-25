@@ -20,11 +20,11 @@ La práctica profesional equivalente tiene varios nombres: **black-box testing**
 
 ## Estado
 
-🟢 Fase 1 completada (piloto del perfil, 2026-11-17) — siguiente: Fase 2 (medir)
+🟢 Fases 1, 2 y 3 completadas (piloto del perfil) — siguiente: repetir el piloto en la etapa 03
 
 ## Última actualización
 
-2026-11-17
+2026-11-25
 
 ## Prioridad
 
@@ -75,46 +75,92 @@ La pieza clave no es la IA: es la **spec**. Si es vaga, el tester adivina y el p
 
 ---
 
-## Flujo manual (piloto)
+## Flujo de trabajo (manual)
 
-```
-1. Crear docs/specs/stage-02-profile.md
-   Solo comportamiento: entradas, salidas, errores, límites y efectos.
-   Sin nombres de funciones, archivos ni detalles internos.
+La orquestación es manual: cada paso lo inicia una persona. Lo único automatizado
+es la ejecución de la suite y la publicación de su resultado.
 
-2. Revisar y aprobar la spec (dueño del proyecto).
+| Paso | Quién | Qué hace |
+|---|---|---|
+| 1. Planificación | Dueño + asistente (DeepSeek V4.1 Flash Free) | Alcance, decisiones y pendientes de la etapa. |
+| 2. Spec | Dueño + asistente | Se escribe desde historias de usuario y criterios de aceptación. **Antes del código.** |
+| 3. Aprobación | Dueño | La spec queda aprobada y versionada. |
+| 4. Implementación | Dueño | Escribe el código; el asistente resuelve dudas y recomienda librerías. |
+| 5. Tests | Tester aislado (GLM-5.3-Flash Free) | Recibe solo la spec. No lee `src/`. Escribe los tests de aceptación. |
+| 6. Ejecución | CI | Corre `test` y `test:spec`; publica el resumen en el PR. |
+| 7. Triaje | Dueño + asistente | Cada fallo: bug del código, spec ambigua, test equivocado o entorno. |
+| 8. Corrección | Dueño | Arregla el código o la spec según el triaje. |
+| 9. Cierre | Asistente | Reporte, métricas y actualización del plan. |
 
-3. Abrir otra sesión con otro modelo/proveedor.
-   Pasarle SOLO la spec y cómo se corren los tests.
+Reglas que no cambian: el tester no ve la implementación, no modifica tests para
+que pasen y reporta las diferencias. Sin triaje humano, su reporte no se toma
+como verdad (en el piloto, 1 de cada 5 fallos clasificados era falso y 24 tests
+pasaban por el motivo equivocado).
 
-4. El agente escribe los tests de aceptación desde la spec.
+**Por qué la spec va antes del código**: si se escribe después, describe lo que el
+código hace y el tester hereda sus supuestos. En el piloto, los 110 unitarios
+pasaban y validaban el comportamiento equivocado.
 
-5. Correr los tests contra el código real.
+### Detalle de cada paso
 
-6. Triaje de cada fallo:
-     ¿bug del código?   → arreglar el código
-     ¿spec ambigua?     → arreglar la spec
-     ¿test equivocado?  → descartar el test
-     ¿pasa y no debería? → falta un caso en la spec
-
-7. Repetir hasta estabilizar. Guardar spec y tests en git.
-```
+1. **Planificación**: se define qué entra y qué no. Los pendientes van a
+   `docs/roadmap/pendientes.md`.
+2. **Spec**: solo comportamiento (entradas, salidas, errores, límites, efectos).
+   Sin nombres de funciones ni archivos.
+3. **Aprobación**: sin spec aprobada no se abre la sesión del tester.
+4. **Implementación**: es la única fase donde se lee el código a fondo.
+5. **Tests**: sesión nueva, otro modelo, solo la spec y cómo correr los tests.
+6. **Ejecución**: local y CI. Si el CI falla, el resumen queda en el PR.
+7. **Triaje**: `bug` → arreglar código · `spec` → aclarar spec · `test` →
+   descartar o corregir el test · `entorno` → arreglar configuración.
+8. **Corrección**: se repite hasta estabilizar. Cada corrección vuelve a correr
+   la suite.
+9. **Cierre**: reporte en `docs/reports/`, métricas con la plantilla y estado
+   del plan actualizado.
 
 ---
 
 ## Plan de aprendizaje por fases
 
-### Fase 1 — Manual (actual)
+### Fase 1 — Manual ✅
 
-Hacer el flujo completo a mano con una sola etapa. Sin herramientas nuevas.
+Completada con el piloto de la etapa 02. Resultados en
+[`docs/reports/stage-02-profile-spec-tests.md`](../../reports/stage-02-profile-spec-tests.md).
 
-### Fase 2 — Medir
+### Fase 2 — Medir ✅
 
-Documentar qué encontró el piloto: bugs reales, ambigüedades, falsos positivos y tiempo invertido. Decidir si vale la pena repetirlo.
+Completada el 2026-11-25. Lo que quedó documentado:
 
-### Fase 3 — Automatizar lo repetitivo
+- **Métricas**: 57 tests, 10 bugs reales, 24 falsos verdes (42 %), 4 ambigüedades
+  y 1 reporte descartado. El tiempo no se midió en el piloto.
+- **Criterio de repetición**: 3 o más bugs reales, falsos verdes por debajo del
+  25 % y 2 sesiones o menos de trabajo efectivo.
+- **Plantilla de medición**: sección **Métricas** en
+  [`docs/templates/spec-test-report-template.md`](../../templates/spec-test-report-template.md),
+  con registro de horas por fase.
 
-Usar **GitHub Actions** para lo que ya es mecánico: correr tests, comentar en el PR, bloquear el merge. No automatizar el juicio.
+Decisión: repetir una vez en la etapa 03, midiendo el tiempo antes de invertir en
+automatizar.
+
+### Fase 3 — Automatizar lo repetitivo ✅
+
+Completada el 2026-11-25. Todo en `.github/workflows/ci.yml`, job `quality`:
+
+- La suite corre con `--json --outputFile=spec-results.json`.
+- Un paso con `actions/github-script` publica o actualiza **un comentario en el PR**
+  con el total y los tests que fallaron. Si el PR viene de un fork, el comentario
+  falla por permisos y el CI sigue.
+- Un paso final devuelve el **rojo** cuando la suite falló, para que el check
+  bloquee el merge.
+- Se agregó `permissions: pull-requests: write` al job.
+- **No** se agregó filtro por rutas: la suite corre dentro del job del backend,
+  que ya instala dependencias y compila; el ahorro sería de segundos.
+
+Lo único que queda fuera del workflow es marcar el check como **requerido** en la
+protección de rama del repositorio (Settings → Branches). Eso es configuración de
+GitHub, no código, y está anotado en `docs/roadmap/pendientes.md`.
+
+Lo que no se automatiza, por diseño: el triaje y la clasificación de fallos.
 
 ### Fase 4 — Evaluar orquestación
 
