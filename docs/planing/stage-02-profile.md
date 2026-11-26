@@ -238,4 +238,4 @@ por tests automatizados (Jest y Vitest + React Testing Library respectivamente).
 
 ## Próxima etapa
 
-Stage 03 — Recetas (por definir)
+[Stage 03 — Generación y gestión de recetas](./stage-03-recipes.md)
